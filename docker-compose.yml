@@ -9,7 +9,7 @@ services:
       - PORT=8000
       - PROXY_PORT=8080
       - URL=https://api.deepseek.com/v1/
-      - OPENAI_API_KEY=sk-131ab61ecc8c4ad4a760ab36f88ebf2f
+      - OPENAI_API_KEY=sk-1XXXxxXXXXX
       - MODEL=deepseek-chat
     volumes:
       - ./files:/app/files
