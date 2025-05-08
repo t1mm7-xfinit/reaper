@@ -98,9 +98,13 @@ func (manager *AgentManager) sendAgentMessage(content string) {
 
 func process_prompt(prompt string) Attack {
 	ctx := context.Background()
+	client_deepseek := openai.DefaultConfig(os.Getenv("OPENAI_API_KEY"))
+	client_deepseek.BaseURL = os.Getenv("URL")
+	client_deepseek_with_config := openai.NewClientWithConfig(client_deepseek)
+
 
 	client := instructor.FromOpenAI(
-		openai.NewClient(os.Getenv("OPENAI_API_KEY")),
+		client_deepseek_with_config,
 		instructor.WithMode(instructor.ModeJSONSchema),
 		instructor.WithMaxRetries(3),
 	)
@@ -109,7 +113,7 @@ func process_prompt(prompt string) Attack {
 	resp, err := client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
-			Model: openai.GPT4oMini,
+			Model: os.Getenv("MODEL"),
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
@@ -132,11 +136,18 @@ func process_prompt(prompt string) Attack {
 func generate_report_content(function_model Attack, findings []models.FuzzResult) string {
 	ctx := context.Background()
 
+	client_deepseek := openai.DefaultConfig(os.Getenv("OPENAI_API_KEY"))
+	client_deepseek.BaseURL = os.Getenv("URL")
+	// fmt.Println(os.Getenv("OPENAI_API_KEY"))
+	client_deepseek_with_config := openai.NewClientWithConfig(client_deepseek)
+
+
 	client := instructor.FromOpenAI(
-		openai.NewClient(os.Getenv("OPENAI_API_KEY")),
+		client_deepseek_with_config,
 		instructor.WithMode(instructor.ModeJSONSchema),
 		instructor.WithMaxRetries(3),
 	)
+
 	system_prompt := "You are an expert web application security analyst/engineer who has just run a sophisticated attack against an application to validate that a broken object level access (BOLA) flaw exists in a web app. Your job is to strike a balance between ease of understanding and technical accuracy when writing up this report.  Do NOT hallicinate or make up anything that you can't derive from the results presented in this prompt.  You want to impress the reader with prose that is concise and clear."
 
 	user_prompt := "I have provided you with a JSON array of approx 20 results from a successful broken object level access (BOLA) attack. The results are in this code block:\n\n"
@@ -169,7 +180,7 @@ func generate_report_content(function_model Attack, findings []models.FuzzResult
 	resp, err := client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
-			Model: openai.GPT4Turbo,
+			Model: os.Getenv("MODEL"),
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleSystem,
@@ -207,10 +218,16 @@ func generate_report_content(function_model Attack, findings []models.FuzzResult
 
 func excludedFuzzKeys(request models.Request) []string {
 	// Extract the keys from the body
+
 	ctx := context.Background()
+	client_deepseek := openai.DefaultConfig(os.Getenv("OPENAI_API_KEY"))
+	// fmt.Println(os.Getenv("OPENAI_API_KEY"))
+	client_deepseek.BaseURL = os.Getenv("URL")
+	client_deepseek_with_config := openai.NewClientWithConfig(client_deepseek)
+
 
 	client := instructor.FromOpenAI(
-		openai.NewClient(os.Getenv("OPENAI_API_KEY")),
+		client_deepseek_with_config,
 		instructor.WithMode(instructor.ModeJSONSchema),
 		instructor.WithMaxRetries(3),
 	)
@@ -220,7 +237,7 @@ func excludedFuzzKeys(request models.Request) []string {
 	resp, err := client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
-			Model: openai.GPT4oMini,
+			Model: os.Getenv("MODEL"),
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,

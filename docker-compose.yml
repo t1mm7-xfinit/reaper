@@ -3,13 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: .env
     environment:
       - ENV=docker
       - HOST=0.0.0.0
       - PORT=8000
       - PROXY_PORT=8080
-      - OPENAI_API_KEY=your_openai_key
+      - URL=https://api.deepseek.com/v1/
+      - OPENAI_API_KEY=sk-131ab61ecc8c4ad4a760ab36f88ebf2f
+      - MODEL=deepseek-chat
     volumes:
       - ./files:/app/files
     ports:
